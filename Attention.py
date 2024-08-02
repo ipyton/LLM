@@ -2,16 +2,15 @@ import torch
 import torch.nn as nn
 
 inputs = torch.tensor(
-  [[0.43, 0.15, 0.89],
-   [0.55, 0.87, 0.66],
-   [0.57, 0.85, 0.64],
-   [0.22, 0.58, 0.33],
-   [0.77, 0.25, 0.10],
-   [0.05, 0.80, 0.55]])
-x_2 = inputs[1] # second input element
-d_in = inputs.shape[1] # the input embedding size, d=3
-d_out = 2 # the output embedding size, d=2
-
+    [[0.43, 0.15, 0.89],
+     [0.55, 0.87, 0.66],
+     [0.57, 0.85, 0.64],
+     [0.22, 0.58, 0.33],
+     [0.77, 0.25, 0.10],
+     [0.05, 0.80, 0.55]])
+x_2 = inputs[1]  # second input element
+d_in = inputs.shape[1]  # the input embedding size, d=3
+d_out = 2  # the output embedding size, d=2
 
 
 class CausalAttention(nn.Module):
@@ -20,10 +19,10 @@ class CausalAttention(nn.Module):
         super().__init__()
         self.d_out = d_out
         self.W_query = nn.Linear(d_in, d_out, bias=bias)
-        self.W_key   = nn.Linear(d_in, d_out, bias=bias)
+        self.W_key = nn.Linear(d_in, d_out, bias=bias)
         self.W_value = nn.Linear(d_in, d_out, bias=bias)
         self.dropout = nn.Dropout(dropout)
-        self.register_buffer('mask', torch.triu(torch.ones(context_length, context_length), diagonal=1)) # New
+        self.register_buffer('mask', torch.triu(torch.ones(context_length, context_length), diagonal=1))  # New
 
     def forward(self, x):
         b, num_tokens, d_in = x.shape
@@ -42,7 +41,6 @@ class CausalAttention(nn.Module):
 
 
 def test_causal_attention():
-
     torch.manual_seed(123)
     batch = torch.stack((inputs, inputs), dim=0)
 
@@ -68,7 +66,7 @@ def test_multi_head_attention():
     torch.manual_seed(123)
     batch = torch.stack((inputs, inputs), dim=0)
 
-    context_length = batch.shape[1] # This is the number of tokens
+    context_length = batch.shape[1]  # This is the number of tokens
     d_in, d_out = 3, 2
     mha = MultiHeadAttentionWrapper(
         d_in, d_out, context_length, 0.0, num_heads=2
@@ -141,13 +139,14 @@ class MultiHeadAttention(nn.Module):
         return context_vec
 
 
-torch.manual_seed(123)
-batch = torch.stack((inputs, inputs), dim=0)
+if __name__ == "__main__":
+    torch.manual_seed(123)
+    batch = torch.stack((inputs, inputs), dim=0)
 
-batch_size, context_length, d_in = batch.shape
-d_out = 2
-mha = MultiHeadAttention(d_in, d_out, context_length, 0.0, num_heads=2)
+    batch_size, context_length, d_in = batch.shape
+    d_out = 2
+    mha = MultiHeadAttention(d_in, d_out, context_length, 0.0, num_heads=2)
 
-context_vecs = mha(batch)
+    context_vecs = mha(batch)
 
-print(context_vecs)
+    print(context_vecs)
